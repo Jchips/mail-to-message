@@ -7,6 +7,8 @@ const sendText = require('../clients/twilioClient');
 async function checkEmails(oauth2Client, gmailUser) {
   const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
 
+  console.log(gmail); // delete later
+
   const res = await gmail.users.messages.list({
     userId: 'me',
     q: `from:${gmailUser}@gmail.com is:unread`,

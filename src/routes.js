@@ -9,7 +9,7 @@ const router = express.Router();
 
 configureOAuth2Client().then(oauth2Client => {
   // Route to trigger email checking
-  router.get('/check-emails/:gmailUser', async (req, res, next) => {
+  router.get('/getEmails/:gmailUser', async (req, res, next) => {
     try {
       let { gmailUser } = req.params;
       if (gmailUser.slice(-10) === '@gmail.com') {

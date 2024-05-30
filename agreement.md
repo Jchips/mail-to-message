@@ -12,7 +12,7 @@ What are the key strengths of each person on the team?
 
 How can you best utilize these strengths in the execution of your project?
 
-- By using them throughout developing the project.
+- By using them throughout developing the project. I will play to my strengths.
 
 In which professional competencies do you each want to develop greater strength?
 
@@ -60,7 +60,7 @@ What project management tool will be used?
 
 Make a single copy of the Presentation Deck Template. Share your copy will all team members, so everyone is working from the same file.
 
-Link to the shared doc in your project plan.
+[Link to the presentation](https://docs.google.com/presentation/d/1sByxmG-0GfkisR9UoujQsMkW8Pz2Rfdd0Akrk0bHDR4/edit?usp=sharing)
 
 ## Git Process
 
