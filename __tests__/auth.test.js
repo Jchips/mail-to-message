@@ -7,7 +7,7 @@ const configureOAuth2Client = require('../src/auth');
 jest.mock('@google-cloud/local-auth');
 
 describe('configureOAuth2Client', () => {
-  it('should return an instance of OAuth2Client', async () => {
+  test('should return an instance of OAuth2Client', async () => {
     authenticate.mockResolvedValue(new OAuth2Client({
       clientId: 'test-client-id',
       clientSecret: 'test-client-secret',

@@ -6,9 +6,7 @@ const checkEmails = require('./clients/gmailClient');
 
 const router = express.Router();
 
-
 configureOAuth2Client().then(oauth2Client => {
-  // Route to trigger email checking
   router.get('/getEmails/:gmailUser', async (req, res, next) => {
     try {
       let { gmailUser } = req.params;

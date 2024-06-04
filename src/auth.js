@@ -2,7 +2,10 @@
 
 const { authenticate } = require('@google-cloud/local-auth');
 
-// Configure OAuth2 client using local-auth for easier setup
+/**
+ * Configures OAuth2 client
+ * @returns {Oauth2Client} - An instance of OAuth2Client
+ */
 async function configureOAuth2Client() {
   const oauth2Client = await authenticate({
     scopes: [

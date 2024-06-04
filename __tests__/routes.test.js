@@ -1,18 +1,5 @@
 'use strict';
 
-// const app = require('../server');
-// const supertest = require('supertest');
-// const request = supertest(app);
-
-// let oauth2Client = {};
-
-// describe('testing the getEmails route', () => {
-//   test('Configures Google OAuth2 Client', async () => {
-//     // let response = await request.
-
-//   });
-// });
-
 const request = require('supertest');
 const express = require('express');
 const { authenticate } = require('@google-cloud/local-auth');
@@ -22,12 +9,7 @@ const checkEmails = require('../src/clients/gmailClient');
 const routes = require('../src/routes');
 
 jest.mock('@google-cloud/local-auth');
-// jest.mock('../src/auth.js');
-// const authModule = require('../src/auth');
-// console.log(authModule);
-jest.mock('../src/clients/gmailClient'); // Mock the checkEmails module
-
-// Mock the Twilio client directly in the test file
+jest.mock('../src/clients/gmailClient');
 jest.mock('twilio', () => {
   return jest.fn(() => ({
     messages: {
@@ -46,14 +28,9 @@ beforeAll(async () => {
     redirectUri: 'test-redirect-uri',
   }));
 
-  // Mock the configureOAuth2Client function to return the mock OAuth2Client
-  // configureOAuth2Client.mockResolvedValue(oauth2Client);
-
-  // Create an Express app and router
   app = express();
   const router = express.Router();
 
-  // Configure the route
   await configureOAuth2Client().then(oauth2Client => {
     router.get('/getEmails/:gmailUser', async (req, res) => {
       try {
@@ -77,15 +54,15 @@ afterAll(() => {
   jest.resetAllMocks();
 });
 
-describe('GET /getEmails/:gmailUser', () => {
-
-  it('should return 404 if gmailUser contains @gmail.com', async () => {
+describe('check getEmails route', () => {
+  test('should return 404 if gmailUser contains @gmail.com', async () => {
     const response = await request(app).get('/getEmails/user@gmail.com');
+
     expect(response.status).toBe(404);
     expect(response.text).toBe('please only enter the username (the text before the @ symbol)');
   });
 
-  it('should return 200 and check emails if gmailUser is valid', async () => {
+  test('should return 200 and check emails if gmailUser is valid', async () => {
     checkEmails.mockResolvedValue();
     const response = await request(app).get('/getEmails/validUser');
 
@@ -94,7 +71,7 @@ describe('GET /getEmails/:gmailUser', () => {
     expect(checkEmails).toHaveBeenCalledWith(oauth2Client, 'validUser');
   });
 
-  it('should return 500 if an error occurs', async () => {
+  test('should return 500 if an error occurs', async () => {
     checkEmails.mockRejectedValue(new Error('Test error'));
     const response = await request(app).get('/getEmails/validUser');
 
