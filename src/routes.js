@@ -58,20 +58,21 @@ function createRouter(oAuth2Client) {
       //   return res.status(204).send(); // Respond with a 204 No Content status
       // }
       if (message) {
-        const message = req.body.message;
+        // const message = req.body.message;
         const data = Buffer.from(message.data, 'base64').toString('utf-8');
-        console.log('🚀 ~ router.post ~ data:', data);
         const notification = JSON.parse(data);
         console.log('🚀 ~ router.post ~ notification:', notification);
 
         const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
-        const messageId = notification.email.messageId;
+        // const messageId = notification.email.messageId;
+        const messageId = message.messageId;
 
         // Get the details of the new email
         const email = await gmail.users.messages.get({
           userId: 'me',
           id: messageId,
         });
+        console.log('🚀 ~ router.post ~ email:', email);
 
         // Check emails from the user mentioned in the notification (adjust as necessary)
         // await checkEmails(oAuth2Client, notification.gmailUser);
