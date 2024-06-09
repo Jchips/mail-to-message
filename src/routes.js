@@ -8,7 +8,15 @@ const router = express.Router();
 let specifiedGmailUser;
 let storedHistoryId;
 
+/**
+ * Creates the router.
+ * Router is in a function for testing purposes.
+ * @param {OAuth2Client} oAuth2Client - The Google OAuth2Client.
+ * @returns - An instance of a express router.
+ */
 function createRouter(oAuth2Client) {
+
+  // login to gmail route
   router.get('/auth', (req, res) => {
     const authUrl = oAuth2Client.generateAuthUrl({
       access_type: 'offline',
@@ -18,6 +26,7 @@ function createRouter(oAuth2Client) {
     res.redirect(authUrl);
   });
 
+  // authenticate gmail route
   router.get('/auth/callback', async (req, res) => {
     const { code } = req.query;
     if (!code) {
@@ -26,7 +35,6 @@ function createRouter(oAuth2Client) {
     try {
       const { tokens } = await oAuth2Client.getToken(code);
       oAuth2Client.setCredentials(tokens);
-      // await subscribeToGmailPushNotifs(oAuth2Client, 'gmail-notifications');
       res.status(200).send('Authorization successful. You can now access Gmail.');
     } catch (error) {
       console.error('Error retrieving access token:', error);
@@ -34,6 +42,7 @@ function createRouter(oAuth2Client) {
     }
   });
 
+  // subscribe to get notifications from specific gmail user route
   router.get('/getEmails/:gmailUser', async (req, res, next) => {
     try {
       let { gmailUser } = req.params;
@@ -50,61 +59,38 @@ function createRouter(oAuth2Client) {
     }
   });
 
-  // Function to get email details
-  async function getEmailDetails(gmail, messageId) {
-    const res = await gmail.users.messages.get({
-      userId: 'me',
-      id: messageId,
-    });
-    return res.data;
-  }
-
+  // subscription endpoint route (sends text messages)
   router.post('/gmail/push', async (req, res) => {
-    console.log('req.body', req.body); // delete later
     const message = req.body.message;
     try {
       if (message) {
-        // const message = req.body.message;
-        const data = Buffer.from(message.data, 'base64').toString('utf-8');
-        const notification = JSON.parse(data);
-        console.log('🚀 ~ router.post ~ notification:', notification); // delete later
-
-        // if (notification.emailAddress && notification.historyId) {
         if (storedHistoryId) {
           console.log('🚀 ~ router.post ~ storedHistoryId:', storedHistoryId); // delete later
-          // console.log(`Received notification for email address: ${notification.emailAddress}`); // delete later
-
           const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
-
           const history = await gmail.users.history.list({
             userId: 'me',
             startHistoryId: storedHistoryId,
             historyTypes: ['messageAdded'],
           });
-
-          console.log('🚀 ~ router.post ~ history:', history); // delete later
+          console.log('🚀 ~ router.post ~ history:', history.data); // delete later
 
           // Extract message ID
           if (history.data.history && history.data.history.length > 0) {
+            console.log('here'); // delete later
             const messageId = history.data.history[0].messages[0].id;
-
-            // Get the email details
             const emailDetails = await getEmailDetails(gmail, messageId);
 
-            // Extract the sender's email address from the email headers
+            // Extract the sender's email address from the email headers and filter
             const headers = emailDetails.payload.headers;
             const fromHeader = headers.find(header => header.name === 'From');
             if (fromHeader) {
               const senderEmail = fromHeader.value;
-
-              // Filter based on the sender's email address
               if (senderEmail.includes(specifiedGmailUser)) {
                 await checkEmails(oAuth2Client, specifiedGmailUser);
               }
             }
           }
         }
-
       }
       res.status(204).send(); // Respond with a 204 No Content status
     } catch (error) {
@@ -112,6 +98,20 @@ function createRouter(oAuth2Client) {
       res.status(400).send('Error processing Gmail push notification: ' + error.message);
     }
   });
+
+  /**
+   * Gets email details
+   * @param {gmail_v1.Gmail} gmail - Gmail API Client
+   * @param {String} messageId - The messageId of the retrieved email
+   * @returns {Object} - Details about the retrieved email
+   */
+  async function getEmailDetails(gmail, messageId) {
+    const res = await gmail.users.messages.get({
+      userId: 'me',
+      id: messageId,
+    });
+    return res.data;
+  }
 
   return router;
 }
