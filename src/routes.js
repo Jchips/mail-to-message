@@ -51,39 +51,41 @@ function createRouter(oAuth2Client) {
 
   router.post('/gmail/push', async (req, res) => {
     console.log('req.body', req.body); // delete later
-    // const message = req.body.message;
+    const message = req.body.message;
     try {
-      if (!req.body || !req.body.message) {
-        console.log('No messages in the Pub/Sub notification');
-        return res.status(204).send(); // Respond with a 204 No Content status
-      }
-      // if (message) {
-      const message = req.body.message;
-      const data = Buffer.from(message.data, 'base64').toString('utf-8');
-      const notification = JSON.parse(data);
-
-      const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
-      const messageId = notification.email.messageId;
-
-      // Get the details of the new email
-      const email = await gmail.users.messages.get({
-        userId: 'me',
-        id: messageId,
-      });
-
-      // Check emails from the user mentioned in the notification (adjust as necessary)
-      // await checkEmails(oAuth2Client, notification.gmailUser);
-
-      // Check if the email is from the specified user
-      const headers = email.data.payload.headers;
-      const fromHeader = headers.find(header => header.name === 'From');
-      const fromEmail = fromHeader ? fromHeader.value : '';
-
-      if (fromEmail.includes(specifiedGmailUser)) {
-        // Send notification if the email is from the specified user
-        await checkEmails(oAuth2Client, specifiedGmailUser);
-      }
+      // if (!req.body || !req.body.message) {
+      //   console.log('No messages in the Pub/Sub notification');
+      //   return res.status(204).send(); // Respond with a 204 No Content status
       // }
+      if (message) {
+        const message = req.body.message;
+        const data = Buffer.from(message.data, 'base64').toString('utf-8');
+        console.log('🚀 ~ router.post ~ data:', data);
+        const notification = JSON.parse(data);
+        console.log('🚀 ~ router.post ~ notification:', notification);
+
+        const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
+        const messageId = notification.email.messageId;
+
+        // Get the details of the new email
+        const email = await gmail.users.messages.get({
+          userId: 'me',
+          id: messageId,
+        });
+
+        // Check emails from the user mentioned in the notification (adjust as necessary)
+        // await checkEmails(oAuth2Client, notification.gmailUser);
+
+        // Check if the email is from the specified user
+        const headers = email.data.payload.headers;
+        const fromHeader = headers.find(header => header.name === 'From');
+        const fromEmail = fromHeader ? fromHeader.value : '';
+
+        if (fromEmail.includes(specifiedGmailUser)) {
+          // Send notification if the email is from the specified user
+          await checkEmails(oAuth2Client, specifiedGmailUser);
+        }
+      }
       res.status(204).send(); // Respond with a 204 No Content status
     } catch (error) {
       console.error('Error processing Gmail push notification:', error.message);
