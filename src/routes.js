@@ -75,8 +75,10 @@ function createRouter(oAuth2Client) {
 
           const history = await gmail.users.history.list({
             userId: 'me',
-            startHistoryId: data.historyId,
+            startHistoryId: notification.historyId,
           });
+
+          console.log('🚀 ~ router.post ~ history:', history); // delete later
 
           // Extract message ID
           if (history.data.history && history.data.history.length > 0) {
