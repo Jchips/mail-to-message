@@ -33,4 +33,27 @@ async function checkEmails(oAuth2Client, gmailUser) {
   }
 }
 
-module.exports = checkEmails;
+// Subscribes to the Gmail Pub/Sub topic
+async function subscribeToGmailPushNotifs(oAuth2Client, topicName) {
+  const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
+
+  try {
+    const res = await gmail.users.watch({
+      userId: 'me',
+      requestBody: {
+        labelIds: ['INBOX'],
+        topicName: `projects/mail-to-message/topics/${topicName}`,
+      },
+    });
+
+    console.log('Watch response:', res.data); // delete later
+    if (res.data.historyId) {
+      return res.data.historyId;
+    }
+    return null;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+module.exports = { checkEmails, subscribeToGmailPushNotifs };

@@ -2,7 +2,7 @@
 
 const request = require('supertest');
 const express = require('express');
-const checkEmails = require('../src/clients/gmailClient');
+const { checkEmails } = require('../src/clients/gmailClient');
 const { google } = require('googleapis');
 const createRouter = require('../src/routes');
 
