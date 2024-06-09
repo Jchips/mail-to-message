@@ -9,7 +9,7 @@ async function sendText(to, body) {
   try {
     let message = await twilioClient.messages.create({
       body: body,
-      from: '+12532999750',
+      from: process.env.TWILIO_NUMBER, // Twilio number
       to: to,
     });
     console.log(`Message sent: ${message.sid}`);

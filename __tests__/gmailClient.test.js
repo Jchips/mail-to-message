@@ -1,5 +1,6 @@
 'use strict';
 
+require('dotenv').config();
 const { google } = require('googleapis');
 const checkEmails = require('../src/clients/gmailClient');
 const sendText = require('../src/clients/twilioClient');

@@ -1,5 +1,6 @@
 'use strict';
 
+require('dotenv').config();
 const twilio = require('twilio');
 const sendText = require('../src/clients/twilioClient');
 
