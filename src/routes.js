@@ -65,18 +65,15 @@ function createRouter(oAuth2Client) {
     try {
       if (message) {
         if (storedHistoryId) {
-          console.log('🚀 ~ router.post ~ storedHistoryId:', storedHistoryId); // delete later
           const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
           const history = await gmail.users.history.list({
             userId: 'me',
             startHistoryId: storedHistoryId,
             historyTypes: ['messageAdded'],
           });
-          console.log('🚀 ~ router.post ~ history:', history.data); // delete later
 
           // Extract message ID
           if (history.data.history && history.data.history.length > 0) {
-            console.log('here'); // delete later
             const messageId = history.data.history[0].messages[0].id;
             const emailDetails = await getEmailDetails(gmail, messageId);
 
@@ -85,7 +82,8 @@ function createRouter(oAuth2Client) {
             const fromHeader = headers.find(header => header.name === 'From');
             if (fromHeader) {
               const senderEmail = fromHeader.value;
-              if (senderEmail.includes(specifiedGmailUser)) {
+              console.log('🚀 ~ router.post ~ senderEmail:', senderEmail); // delete later
+              if (senderEmail.slice(0, -10) === specifiedGmailUser) {
                 await checkEmails(oAuth2Client, specifiedGmailUser);
               }
             }
