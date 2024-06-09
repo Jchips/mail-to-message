@@ -82,8 +82,7 @@ function createRouter(oAuth2Client) {
             const fromHeader = headers.find(header => header.name === 'From');
             if (fromHeader) {
               const senderEmail = fromHeader.value;
-              console.log('🚀 ~ router.post ~ senderEmail:', senderEmail); // delete later
-              if (senderEmail.slice(0, -10) === specifiedGmailUser) {
+              if (senderEmail.includes(`${specifiedGmailUser}@gmail.com`)) {
                 await checkEmails(oAuth2Client, specifiedGmailUser);
               }
             }
