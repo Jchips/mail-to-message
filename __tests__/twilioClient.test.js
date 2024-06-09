@@ -27,7 +27,7 @@ describe('twilioClient', () => {
 
     expect(mock).toHaveBeenCalledWith({
       body: mockBody,
-      from: '+12532999750',
+      from: process.env.TWILIO_NUMBER,
       to: mockTo,
     });
     expect(console.log).toHaveBeenCalledWith('Message sent: mockSid');

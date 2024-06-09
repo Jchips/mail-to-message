@@ -24,8 +24,6 @@ jobs:
         run: |
           npm i
           npm run build --if-
-          TWILIO_VIRTUAL_PHONE=$TWILIO_VIRTUAL_PHONE
-          TWILIO_NUMBER=$TWILIO_NUMBER
           echo "TWILIO_VIRTUAL_PHONE=$TWILIO_VIRTUAL_PHONE" >> $GITHUB_ENV
           echo "TWILIO_NUMBER=$TWILIO_NUMBER" >> $GITHUB_ENV
           npm test
