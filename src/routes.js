@@ -50,8 +50,15 @@ function createRouter(oAuth2Client) {
   });
 
   router.post('/gmail/push', async (req, res) => {
-    const message = req.body.message;
-    if (message) {
+    console.log('req.body', req.body); // delete later
+    // const message = req.body.message;
+    try {
+      if (!req.body || !req.body.message) {
+        console.log('No messages in the Pub/Sub notification');
+        return res.status(204).send(); // Respond with a 204 No Content status
+      }
+      // if (message) {
+      const message = req.body.message;
       const data = Buffer.from(message.data, 'base64').toString('utf-8');
       const notification = JSON.parse(data);
 
@@ -76,8 +83,12 @@ function createRouter(oAuth2Client) {
         // Send notification if the email is from the specified user
         await checkEmails(oAuth2Client, specifiedGmailUser);
       }
+      // }
+      res.status(204).send(); // Respond with a 204 No Content status
+    } catch (error) {
+      console.error('Error processing Gmail push notification:', error.message);
+      res.status(400).send('Error processing Gmail push notification: ' + error.message);
     }
-    res.status(204).send(); // Respond with a 204 No Content status
   });
 
   return router;
