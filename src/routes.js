@@ -1,9 +1,11 @@
 'use strict';
 
 const express = require('express');
-const checkEmails = require('./clients/gmailClient');
+const { google } = require('googleapis');
+const { checkEmails, subscribeToGmailPushNotifs } = require('./clients/gmailClient');
 
 const router = express.Router();
+let specifiedGmailUser;
 
 function createRouter(oAuth2Client) {
   router.get('/auth', (req, res) => {
@@ -23,6 +25,7 @@ function createRouter(oAuth2Client) {
     try {
       const { tokens } = await oAuth2Client.getToken(code);
       oAuth2Client.setCredentials(tokens);
+      // await subscribeToGmailPushNotifs(oAuth2Client, 'gmail-notifications');
       res.status(200).send('Authorization successful. You can now access Gmail.');
     } catch (error) {
       console.error('Error retrieving access token:', error);
@@ -36,6 +39,8 @@ function createRouter(oAuth2Client) {
       if (gmailUser.slice(-10) === '@gmail.com') {
         return res.status(404).send('please only enter the username (the text before the @ symbol)');
       }
+      specifiedGmailUser = gmailUser;
+      await subscribeToGmailPushNotifs(oAuth2Client, 'gmail-notifications');
       await checkEmails(oAuth2Client, gmailUser);
       res.status(200).send('Checked emails and sent notifications if any.');
     } catch (error) {
@@ -43,6 +48,38 @@ function createRouter(oAuth2Client) {
       res.status(500).send('An error occurred.');
     }
   });
+
+  router.post('/gmail/push', async (req, res) => {
+    const message = req.body.message;
+    if (message) {
+      const data = Buffer.from(message.data, 'base64').toString('utf-8');
+      const notification = JSON.parse(data);
+
+      const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
+      const messageId = notification.email.messageId;
+
+      // Get the details of the new email
+      const email = await gmail.users.messages.get({
+        userId: 'me',
+        id: messageId,
+      });
+
+      // Check emails from the user mentioned in the notification (adjust as necessary)
+      // await checkEmails(oAuth2Client, notification.gmailUser);
+
+      // Check if the email is from the specified user
+      const headers = email.data.payload.headers;
+      const fromHeader = headers.find(header => header.name === 'From');
+      const fromEmail = fromHeader ? fromHeader.value : '';
+
+      if (fromEmail.includes(specifiedGmailUser)) {
+        // Send notification if the email is from the specified user
+        await checkEmails(oAuth2Client, specifiedGmailUser);
+      }
+    }
+    res.status(204).send(); // Respond with a 204 No Content status
+  });
+
   return router;
 }
 
