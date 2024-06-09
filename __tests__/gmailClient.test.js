@@ -1,5 +1,6 @@
 'use strict';
 
+require('dotenv').config();
 const { google } = require('googleapis');
 const checkEmails = require('../src/clients/gmailClient');
 const sendText = require('../src/clients/twilioClient');
@@ -48,6 +49,6 @@ describe('gmailClient', () => {
 
     await checkEmails(oauth2Client, gmailUser);
 
-    expect(sendText).toHaveBeenCalledWith('+18777804236', 'You have a new email from gmailuser!');
+    expect(sendText).toHaveBeenCalledWith(process.env.TWILIO_VIRTUAL_PHONE, 'You have a new email from gmailuser!');
   });
 });

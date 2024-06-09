@@ -19,8 +19,8 @@ async function checkEmails(oauth2Client, gmailUser) {
       id: message.id,
     });
 
-    // Sends a text message
-    sendText('+18777804236', `You have a new email from ${gmailUser}!`);
+    // Sends a text message to virtual Twilio phone
+    sendText(process.env.TWILIO_VIRTUAL_PHONE, `You have a new email from ${gmailUser}!`);
 
     // Marks the email as read
     await gmail.users.messages.modify({

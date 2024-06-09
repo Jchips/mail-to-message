@@ -151,3 +151,4 @@ $RECYCLE.BIN/
 # End of https://www.gitignore.io/api/vim,osx,node,linux,windows
 
 client_secret.json
+pub_sub_key.json

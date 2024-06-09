@@ -12,15 +12,7 @@
 
 This is a server-side application written in JavaScript using Node.js.
 
-An interface is provided to create new blog
-posts, view existing blog posts, edit existing blog posts, delete existing
-blog posts, and search by both keywords and user names. All blog posts can be
-enriched using Azure Language Services (part of Microsoft's Cognitive Services
-suite), Bing Image API, and Parallel Dots (for automated tagging of posts via
-key phrases detected within the post's body). Image enrichments can be added
-based on the overall sentiment score (a range 0.0 - 1.0 related to the mood
-of the post) and key phrases / keywords detected in the posts. Optionally, users
-can choose to opt-out of these features for privacy or data collection concerns.
+In today's fast-paced world, individuals often receive many critical emails that require immediate attention. However, people may not constantly check their emails and can miss important messages. Mail to Message is a server-side application that sends text message alerts for specific important emails to ensure timely responses, enhancing personal and professional communication management.
 
 ---------------------------------
 
@@ -32,6 +24,8 @@ Microsoft Visual Studio
 - Express
 - Gmail API
 - Twilio
+- Jest
+- Supertest
 
 ---------------------------------
 
