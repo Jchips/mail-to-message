@@ -2,12 +2,13 @@
 
 require('dotenv').config();
 const express = require('express');
-const routes = require('./src/routes');
+const oAuth2Client = require('./src/auth');
+const createRouter = require('./src/routes');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(routes);
+app.use(createRouter(oAuth2Client));
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
