@@ -6,6 +6,7 @@ const { checkEmails, subscribeToGmailPushNotifs } = require('./clients/gmailClie
 
 const router = express.Router();
 let specifiedGmailUser;
+let storedHistoryId;
 
 function createRouter(oAuth2Client) {
   router.get('/auth', (req, res) => {
@@ -40,7 +41,7 @@ function createRouter(oAuth2Client) {
         return res.status(404).send('please only enter the username (the text before the @ symbol)');
       }
       specifiedGmailUser = gmailUser;
-      await subscribeToGmailPushNotifs(oAuth2Client, 'gmail-notifications');
+      storedHistoryId = await subscribeToGmailPushNotifs(oAuth2Client, 'gmail-notifications');
       await checkEmails(oAuth2Client, gmailUser);
       res.status(200).send('Checked emails and sent notifications if any.');
     } catch (error) {
@@ -68,14 +69,17 @@ function createRouter(oAuth2Client) {
         const notification = JSON.parse(data);
         console.log('🚀 ~ router.post ~ notification:', notification); // delete later
 
-        if (notification.emailAddress && notification.historyId) {
-          console.log(`Received notification for email address: ${notification.emailAddress}`); // delete later
+        // if (notification.emailAddress && notification.historyId) {
+        if (storedHistoryId) {
+          console.log('🚀 ~ router.post ~ storedHistoryId:', storedHistoryId); // delete later
+          // console.log(`Received notification for email address: ${notification.emailAddress}`); // delete later
 
           const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
           const history = await gmail.users.history.list({
             userId: 'me',
-            startHistoryId: notification.historyId,
+            startHistoryId: storedHistoryId,
+            historyTypes: ['messageAdded'],
           });
 
           console.log('🚀 ~ router.post ~ history:', history); // delete later

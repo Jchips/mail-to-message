@@ -47,6 +47,10 @@ async function subscribeToGmailPushNotifs(oAuth2Client, topicName) {
     });
 
     console.log('Watch response:', res.data); // delete later
+    if (res.data.historyId) {
+      return res.data.historyId;
+    }
+    return null;
   } catch (error) {
     console.error(error);
   }
