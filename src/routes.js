@@ -66,10 +66,10 @@ function createRouter(oAuth2Client) {
         // const message = req.body.message;
         const data = Buffer.from(message.data, 'base64').toString('utf-8');
         const notification = JSON.parse(data);
-        console.log('🚀 ~ router.post ~ notification:', notification);
+        console.log('🚀 ~ router.post ~ notification:', notification); // delete later
 
-        if (data.emailAddress && data.historyId) {
-          console.log(`Received notification for email address: ${data.emailAddress}`);
+        if (notification.emailAddress && notification.historyId) {
+          console.log(`Received notification for email address: ${notification.emailAddress}`); // delete later
 
           const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
