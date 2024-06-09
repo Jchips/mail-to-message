@@ -4,8 +4,8 @@ const { google } = require('googleapis');
 const sendText = require('../clients/twilioClient');
 
 // Checks emails and then sends text to virtual Twilio phone
-async function checkEmails(oauth2Client, gmailUser) {
-  const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
+async function checkEmails(oAuth2Client, gmailUser) {
+  const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
   const res = await gmail.users.messages.list({
     userId: 'me',

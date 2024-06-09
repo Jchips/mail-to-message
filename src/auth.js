@@ -1,20 +1,11 @@
 'use strict';
 
-const { authenticate } = require('@google-cloud/local-auth');
+const { OAuth2Client } = require('google-auth-library');
 
-/**
- * Configures OAuth2 client
- * @returns {Oauth2Client} - An instance of OAuth2Client
- */
-async function configureOAuth2Client() {
-  const oauth2Client = await authenticate({
-    scopes: [
-      'https://www.googleapis.com/auth/gmail.readonly',
-      'https://www.googleapis.com/auth/gmail.modify',
-    ],
-    keyfilePath: 'client_secret.json',
-  });
-  return oauth2Client;
-}
+const oAuth2Client = new OAuth2Client({
+  clientId: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  redirectUri: process.env.REDIRECT_URI,
+});
 
-module.exports = configureOAuth2Client;
+module.exports = oAuth2Client;
