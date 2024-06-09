@@ -49,43 +49,56 @@ function createRouter(oAuth2Client) {
     }
   });
 
+  // Function to get email details
+  async function getEmailDetails(gmail, messageId) {
+    const res = await gmail.users.messages.get({
+      userId: 'me',
+      id: messageId,
+    });
+    return res.data;
+  }
+
   router.post('/gmail/push', async (req, res) => {
     console.log('req.body', req.body); // delete later
     const message = req.body.message;
     try {
-      // if (!req.body || !req.body.message) {
-      //   console.log('No messages in the Pub/Sub notification');
-      //   return res.status(204).send(); // Respond with a 204 No Content status
-      // }
       if (message) {
         // const message = req.body.message;
         const data = Buffer.from(message.data, 'base64').toString('utf-8');
         const notification = JSON.parse(data);
         console.log('🚀 ~ router.post ~ notification:', notification);
 
-        const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
-        // const messageId = notification.email.messageId;
-        const messageId = message.messageId;
+        if (data.emailAddress && data.historyId) {
+          console.log(`Received notification for email address: ${data.emailAddress}`);
 
-        // Get the details of the new email
-        const email = await gmail.users.messages.get({
-          userId: 'me',
-          id: messageId,
-        });
-        console.log('🚀 ~ router.post ~ email:', email);
+          const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
-        // Check emails from the user mentioned in the notification (adjust as necessary)
-        // await checkEmails(oAuth2Client, notification.gmailUser);
+          const history = await gmail.users.history.list({
+            userId: 'me',
+            startHistoryId: data.historyId,
+          });
 
-        // Check if the email is from the specified user
-        const headers = email.data.payload.headers;
-        const fromHeader = headers.find(header => header.name === 'From');
-        const fromEmail = fromHeader ? fromHeader.value : '';
+          // Extract message ID
+          if (history.data.history && history.data.history.length > 0) {
+            const messageId = history.data.history[0].messages[0].id;
 
-        if (fromEmail.includes(specifiedGmailUser)) {
-          // Send notification if the email is from the specified user
-          await checkEmails(oAuth2Client, specifiedGmailUser);
+            // Get the email details
+            const emailDetails = await getEmailDetails(gmail, messageId);
+
+            // Extract the sender's email address from the email headers
+            const headers = emailDetails.payload.headers;
+            const fromHeader = headers.find(header => header.name === 'From');
+            if (fromHeader) {
+              const senderEmail = fromHeader.value;
+
+              // Filter based on the sender's email address
+              if (senderEmail.includes(specifiedGmailUser)) {
+                await checkEmails(oAuth2Client, specifiedGmailUser);
+              }
+            }
+          }
         }
+
       }
       res.status(204).send(); // Respond with a 204 No Content status
     } catch (error) {
