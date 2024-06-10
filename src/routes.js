@@ -63,8 +63,8 @@ function createRouter(oAuth2Client) {
 
   // subscription endpoint route (sends text messages)
   router.post('/gmail/push', async (req, res, next) => {
+    const message = req.body.message;
     try {
-      const message = req.body.message;
       if (message) {
         await checkEmails(oAuth2Client, specifiedGmailUser);
       }
