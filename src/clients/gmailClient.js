@@ -66,18 +66,4 @@ async function subToGmailPushNotifs(oAuth2Client, topicName) {
   }
 }
 
-/**
- * Gets email details
- * @param {gmail_v1.Gmail} gmail - Gmail API Client
- * @param {String} messageId - The messageId of the retrieved email
- * @returns {Object} - Details about the retrieved email
- */
-async function getEmailDetails(gmail, messageId) {
-  const res = await gmail.users.messages.get({
-    userId: 'me',
-    id: messageId,
-  });
-  return res.data;
-}
-
-module.exports = { checkEmails, subToGmailPushNotifs, getEmailDetails };
+module.exports = { checkEmails, subToGmailPushNotifs };
