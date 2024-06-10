@@ -58,17 +58,17 @@ describe('OAuth2 authentication', () => {
     expect(response.header.location).toBe(authUrl);
   });
 
-  test('GET /auth/callback should return 400 if authorization code is missing', async () => {
-    const response = await request(app).get('/auth/callback');
+  test('GET /auth/redirect should return 400 if authorization code is missing', async () => {
+    const response = await request(app).get('/auth/redirect');
 
     expect(response.status).toBe(400);
     expect(response.text).toBe('Authorization code missing.');
   });
 
-  test('GET /auth/callback should handle OAuth2 callback and set credentials', async () => {
+  test('GET /auth/redirect should handle OAuth2 callback and set credentials', async () => {
     const tokens = { access_token: 'access-token' };
     oAuth2Client.getToken.mockResolvedValue({ tokens });
-    const response = await request(app).get('/auth/callback').query({ code: 'fake-code' });
+    const response = await request(app).get('/auth/redirect').query({ code: 'fake-code' });
 
     expect(oAuth2Client.getToken).toHaveBeenCalledWith('fake-code');
     expect(oAuth2Client.setCredentials).toHaveBeenCalledWith(tokens);
@@ -76,9 +76,9 @@ describe('OAuth2 authentication', () => {
     expect(response.text).toBe('Authorization successful. You can now access Gmail.');
   });
 
-  test('GET /auth/callback should handle errors during token retrieval', async () => {
+  test('GET /auth/redirect should handle errors during token retrieval', async () => {
     oAuth2Client.getToken.mockRejectedValue(new Error('Error retrieving access token'));
-    const response = await request(app).get('/auth/callback').query({ code: 'fake-code' });
+    const response = await request(app).get('/auth/redirect').query({ code: 'fake-code' });
 
     expect(oAuth2Client.getToken).toHaveBeenCalledWith('fake-code');
     expect(response.status).toBe(500);

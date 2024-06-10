@@ -35,6 +35,7 @@ let oAuth2Client;
 
 beforeAll(async () => {
   app = express();
+  app.use(express.json());
   oAuth2Client = new google.auth.OAuth2();
   const tokens = { access_token: 'access-token' };
   oAuth2Client.getToken.mockResolvedValue({ tokens });

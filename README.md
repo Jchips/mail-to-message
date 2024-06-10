@@ -1,14 +1,12 @@
 # Mail to Message
 
-## We are deployed on _____
+## Deployed on Render.com
 
-[project url here]
+[https://mail-to-message.onrender.com](https://mail-to-message.onrender.com)
 
 ---------------------------------
 
 ## Web Application
-
-***[Explain your app, should be at least a paragraph. What does it do? Why should I use? Sell your product!]***
 
 This is a server-side application written in JavaScript using Node.js.
 
@@ -23,6 +21,7 @@ Microsoft Visual Studio
 - Node.js
 - Express
 - Gmail API
+- Google Cloud Pub/Sub API
 - Twilio
 - Jest
 - Supertest
@@ -61,13 +60,15 @@ npm start
 
 ### Viewing text messages
 
-![Virtual phone on Twilio](https://via.placeholder.com/500x250)
+![Virtual phone on Twilio](/src/assets/twilio-virtual-phone.png)
+
+Viewing your received text messages on your phone. For the Twilio virtual phone, you must be logged into your Twilio account.
 
 ## Data Flow (Frontend, Backend, REST API)
 
 ***[Add a clean and clear explanation of what the data flow is. Walk me through it.]***
 ![Data Flow Diagram](/assets/img/Flowchart.png)
 
-## Authors
+## Author
 
 Jelani (Jaye) Rhinehart
