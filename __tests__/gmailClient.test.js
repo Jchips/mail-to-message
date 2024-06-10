@@ -45,11 +45,11 @@ describe('gmailClient', () => {
     const messages = [{ id: '1' }];
 
     mockGmail.users.messages.list.mockResolvedValue({ data: { messages } });
-    mockGmail.users.messages.get.mockResolvedValue({ data: { id: '1', snippet: 'Test email', payload: { headers: [{ name: 'Subject', value: 'email subject' }] } } });
+    mockGmail.users.messages.get.mockResolvedValue({ data: { id: '1', snippet: 'Test email', payload: { headers: [{ name: 'Subject', value: 'subject' }] } } });
     mockGmail.users.messages.modify.mockResolvedValue({ data: { id: '1', labelIds: [] } });
 
     await checkEmails(oauth2Client, gmailUser);
 
-    expect(sendText).toHaveBeenCalledWith(process.env.TWILIO_VIRTUAL_PHONE, 'You have a new email from gmailuser!\nemail subject\nhttps://mail.google.com/mail/u/0/#inbox/1');
+    expect(sendText).toHaveBeenCalledWith(process.env.TWILIO_VIRTUAL_PHONE, 'You have a new email from gmailuser!\nSubject: subject\nhttps://mail.google.com/mail/u/0/#inbox/1');
   });
 });

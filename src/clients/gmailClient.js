@@ -3,7 +3,11 @@
 const { google } = require('googleapis');
 const sendText = require('../clients/twilioClient');
 
-// Checks emails and then sends text to virtual Twilio phone
+/**
+ * Checks emails and then sends text to virtual Twilio phone
+ * @param {OAuth2Client} oAuth2Client - An instance of the Google OAuth2Client.
+ * @param {String} gmailUser - The gmail user to receive text messages for.
+ */
 async function checkEmails(oAuth2Client, gmailUser) {
   const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
@@ -22,8 +26,8 @@ async function checkEmails(oAuth2Client, gmailUser) {
     const subject = email.data.payload.headers.find(header => header.name === 'Subject').value;
     const emailLink = `https://mail.google.com/mail/u/0/#inbox/${message.id}`;
 
-    // Sends a text message to virtual Twilio phone
-    sendText(process.env.TWILIO_VIRTUAL_PHONE, `You have a new email from ${gmailUser}!\n${subject}\n${emailLink}`);
+    // Sends a text message to phone
+    sendText(process.env.TWILIO_VIRTUAL_PHONE, `You have a new email from ${gmailUser}!\nSubject: ${subject}\n${emailLink}`);
 
     // Marks the email as read
     await gmail.users.messages.modify({
@@ -36,7 +40,12 @@ async function checkEmails(oAuth2Client, gmailUser) {
   }
 }
 
-// Subscribes to the Gmail Pub/Sub topic
+/**
+ * Subscribes to the Gmail Pub/Sub topic
+ * @param {OAuth2Client} oAuth2Client - An instance of the Google OAuth2Client.
+ * @param {String} topicName - The name of the Cloud Pub/Sub topic.
+ * @returns - The historyId.
+ */
 async function subToGmailPushNotifs(oAuth2Client, topicName) {
   const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
@@ -58,11 +67,11 @@ async function subToGmailPushNotifs(oAuth2Client, topicName) {
 }
 
 /**
-   * Gets email details
-   * @param {gmail_v1.Gmail} gmail - Gmail API Client
-   * @param {String} messageId - The messageId of the retrieved email
-   * @returns {Object} - Details about the retrieved email
-   */
+ * Gets email details
+ * @param {gmail_v1.Gmail} gmail - Gmail API Client
+ * @param {String} messageId - The messageId of the retrieved email
+ * @returns {Object} - Details about the retrieved email
+ */
 async function getEmailDetails(gmail, messageId) {
   const res = await gmail.users.messages.get({
     userId: 'me',
