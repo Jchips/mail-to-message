@@ -1,12 +1,10 @@
 'use strict';
 
 const express = require('express');
-const { google } = require('googleapis');
-const { checkEmails, subToGmailPushNotifs, getEmailDetails } = require('./clients/gmailClient');
+const { checkEmails, subToGmailPushNotifs } = require('./clients/gmailClient');
 
 const router = express.Router();
 let specifiedGmailUser;
-let storedHistoryId;
 
 /**
  * Creates the router.
@@ -54,7 +52,7 @@ function createRouter(oAuth2Client) {
         return res.status(404).send('please only enter the username (the text before the @ symbol)');
       }
       specifiedGmailUser = gmailUser;
-      storedHistoryId = await subToGmailPushNotifs(oAuth2Client, 'gmail-notifications');
+      await subToGmailPushNotifs(oAuth2Client, 'gmail-notifications');
       await checkEmails(oAuth2Client, gmailUser);
       res.status(200).send('Checked emails and sent notifications if any.');
     } catch (error) {
@@ -65,33 +63,10 @@ function createRouter(oAuth2Client) {
 
   // subscription endpoint route (sends text messages)
   router.post('/gmail/push', async (req, res, next) => {
+    const message = req.body.message;
     try {
-      const message = req.body.message;
       if (message) {
-        if (storedHistoryId) {
-          const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
-          const history = await gmail.users.history.list({
-            userId: 'me',
-            startHistoryId: storedHistoryId,
-            historyTypes: ['messageAdded'],
-          });
-
-          // extract message ID
-          if (history.data.history && history.data.history.length > 0) {
-            const messageId = history.data.history[0].messages[0].id;
-            const emailDetails = await getEmailDetails(gmail, messageId);
-
-            // extract the sender's email address from the email headers and then filter
-            const headers = emailDetails.payload.headers;
-            const fromHeader = headers.find(header => header.name === 'From');
-            if (fromHeader) {
-              const senderEmail = fromHeader.value;
-              if (senderEmail.includes(`${specifiedGmailUser}@gmail.com`)) {
-                await checkEmails(oAuth2Client, specifiedGmailUser);
-              }
-            }
-          }
-        }
+        await checkEmails(oAuth2Client, specifiedGmailUser);
       }
       res.status(204).send();
     } catch (error) {

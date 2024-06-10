@@ -22,7 +22,7 @@ Microsoft Visual Studio
 - Express
 - Gmail API
 - Google Cloud Pub/Sub API
-- Twilio
+- Twilio Messaging API
 - Jest
 - Supertest
 
@@ -48,15 +48,27 @@ cd mail-to-messages
 npm start
 ```
 
-Will need to create Twilio account, get a Twilio phone number, create a Google Developers account and enable the Gmail and Cloud Pub/Sub APIs.
+Will need to create Twilio account, get a Twilio phone number, create a Google Developers account, create a new Google project and enable the Gmail and Cloud Pub/Sub APIs for it. For the Cloud Pub/Sub API, create a topic and subscription. The topic must have the principle `gmail-api-push@system.gserviceaccount.com` with the `Pub/Sub Publisher`. Check the [.env.sample](/.env.sample) for necessary environment variables for the project.
 
 ---------------------------------
 
 ## Usage
 
-### Sending an email
+### Gmail auth
 
-![Sending an email](https://via.placeholder.com/500x250)
+![Authorizing gmail](/src/assets/imgs/gmail-auth-1.png)
+
+When sending a GET request to `/auth`, user should be redirected to a screen that looks like this to login to their Google account for Mail to Message. If user is already logged in to any Google accounts, the screen will let them choose one of the accounts to give Mail to Message authorization to. Mail to Message will ask for permissions to read and modify emails for user's gmail account.
+
+![Gmail authorized confirmation](/src/assets/imgs/gmail-auth-2.png)
+
+Message after gmail is authorized. Now user can subscribe to text messages from a gmail user.
+
+### Subscribe to text messages from a gmail user
+
+![Using GET /getEmails route](/src/assets/imgs/getEmails-route.png)
+
+Choose a gmail user to subscribe to text messages to with a GET request to `/getEmails/:gmailUser`. The `gmailUser` should only contain the gmail username (only the part before '@gmail.com').
 
 ### Viewing text messages
 
