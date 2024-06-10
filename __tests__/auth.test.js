@@ -46,7 +46,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe('OAuth2 authentication', () => {
+describe('OAuth2 authorization', () => {
   test('GET /auth should redirect to Google OAuth2 URL', async () => {
     const response = await request(app).get('/auth');
 
@@ -54,8 +54,18 @@ describe('OAuth2 authentication', () => {
       access_type: 'offline',
       scope: ['https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/gmail.modify'],
     });
-    expect(response.status).toBe(302); // 302 indicates a redirect
+    expect(response.status).toBe(302);
     expect(response.header.location).toBe(authUrl);
+  });
+
+  test('GET /auth should return 500 if there\'s no oAuth2client', async () => {
+    oAuth2Client.generateAuthUrl.mockImplementation(() => {
+      throw new Error('Test error');
+    });
+    const response = await request(app).get('/auth');
+
+    expect(response.status).toBe(500);
+    expect(response.text).toBe('Could not generate authorization URL.');
   });
 
   test('GET /auth/redirect should return 400 if authorization code is missing', async () => {

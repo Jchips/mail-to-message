@@ -11,6 +11,10 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 app.use(express.json());
 
+app.get('/', (req, res, next) => {
+  res.send('Welcome to Mail to Message');
+});
+
 app.use(createRouter(oAuth2Client));
 
 app.use('*', notFound);

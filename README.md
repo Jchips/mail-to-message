@@ -48,11 +48,11 @@ cd mail-to-messages
 npm start
 ```
 
+Will need to create Twilio account, get a Twilio phone number, create a Google Developers account and enable the Gmail and Cloud Pub/Sub APIs.
+
 ---------------------------------
 
 ## Usage
-
-***[Provide some images of your app that shows how it can be used with brief description as title]***
 
 ### Sending an email
 
@@ -60,14 +60,18 @@ npm start
 
 ### Viewing text messages
 
-![Virtual phone on Twilio](/src/assets/twilio-virtual-phone.png)
+![Virtual phone on Twilio](/src/assets/imgs/twilio-virtual-phone.png)
 
 Viewing your received text messages on your phone. For the Twilio virtual phone, you must be logged into your Twilio account.
 
-## Data Flow (Frontend, Backend, REST API)
+## Data Flow
 
-***[Add a clean and clear explanation of what the data flow is. Walk me through it.]***
-![Data Flow Diagram](/assets/img/Flowchart.png)
+![Data Flow Diagram](/src/assets/imgs/mail-to-message-flow-chart.png)
+
+1. The user authorizes their email by sending a GET request to the server (route: `/auth`). The server will redirect the user to a page to authorize. Authorization is done with OAuth2.
+2. Once the user's email is authorized they can subscribe to push notifications by sending a GET request to the `/getEmails` route with a `gmailUser` that they want to subscribe to text messages for.
+3. Once subscribing, the server will check for new emails from the `gmailUser` right away and send text messages (using Twilio) if it finds any.
+4. The server will continue to listen for new emails from the `gmailUser` and send text message alert whenever a new one is sent by automatically pushing to the subscription endpoint `/gmail/push`.
 
 ## Author
 

@@ -11,22 +11,26 @@ let storedHistoryId;
 /**
  * Creates the router.
  * Router is in a function for testing purposes.
- * @param {OAuth2Client} oAuth2Client - The Google OAuth2Client.
+ * @param {OAuth2Client} oAuth2Client - An instance of the Google OAuth2Client.
  * @returns - An instance of a express router.
  */
 function createRouter(oAuth2Client) {
 
   // login to gmail route
   router.get('/auth', (req, res, next) => {
-    const authUrl = oAuth2Client.generateAuthUrl({
-      access_type: 'offline',
-      scope: ['https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/gmail.modify'],
-    });
-    console.log('authUrl', authUrl);
-    res.redirect(authUrl);
+    try {
+      const authUrl = oAuth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: ['https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/gmail.modify'],
+      });
+      console.log('authUrl', authUrl);
+      res.redirect(authUrl);
+    } catch (error) {
+      res.status(500).send('Could not generate authorization URL.');
+    }
   });
 
-  // authenticate gmail route
+  // authorize gmail route
   router.get('/auth/redirect', async (req, res, next) => {
     const { code } = req.query;
     if (!code) {
@@ -89,7 +93,7 @@ function createRouter(oAuth2Client) {
           }
         }
       }
-      res.status(204).send(); // respond with a 204 No Content status
+      res.status(204).send();
     } catch (error) {
       console.error('Error processing Gmail push notification:', error.message);
       res.status(400).send('Error processing Gmail push notification: ' + error.message);
