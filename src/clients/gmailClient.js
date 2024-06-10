@@ -14,13 +14,16 @@ async function checkEmails(oAuth2Client, gmailUser) {
 
   const messages = res.data.messages || [];
   for (const message of messages) {
-    await gmail.users.messages.get({
+    const email = await gmail.users.messages.get({
       userId: 'me',
       id: message.id,
     });
 
+    const subject = email.data.payload.headers.find(header => header.name === 'Subject').value;
+    const emailLink = `https://mail.google.com/mail/u/0/#inbox/${message.id}`;
+
     // Sends a text message to virtual Twilio phone
-    sendText(process.env.TWILIO_VIRTUAL_PHONE, `You have a new email from ${gmailUser}!`);
+    sendText(process.env.TWILIO_VIRTUAL_PHONE, `You have a new email from ${gmailUser}!\n${subject}\n${emailLink}`);
 
     // Marks the email as read
     await gmail.users.messages.modify({
@@ -34,7 +37,7 @@ async function checkEmails(oAuth2Client, gmailUser) {
 }
 
 // Subscribes to the Gmail Pub/Sub topic
-async function subscribeToGmailPushNotifs(oAuth2Client, topicName) {
+async function subToGmailPushNotifs(oAuth2Client, topicName) {
   const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
   try {
@@ -46,14 +49,26 @@ async function subscribeToGmailPushNotifs(oAuth2Client, topicName) {
       },
     });
 
-    console.log('Watch response:', res.data); // delete later
-    if (res.data.historyId) {
-      return res.data.historyId;
-    }
-    return null;
+    console.log('Watch response:', res.data);
+    return res.data.historyId;
   } catch (error) {
     console.error(error);
+    return null;
   }
 }
 
-module.exports = { checkEmails, subscribeToGmailPushNotifs };
+/**
+   * Gets email details
+   * @param {gmail_v1.Gmail} gmail - Gmail API Client
+   * @param {String} messageId - The messageId of the retrieved email
+   * @returns {Object} - Details about the retrieved email
+   */
+async function getEmailDetails(gmail, messageId) {
+  const res = await gmail.users.messages.get({
+    userId: 'me',
+    id: messageId,
+  });
+  return res.data;
+}
+
+module.exports = { checkEmails, subToGmailPushNotifs, getEmailDetails };

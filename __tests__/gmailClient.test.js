@@ -38,17 +38,18 @@ beforeEach(() => {
   };
   gmailUser = 'gmailuser';
 });
+
 describe('gmailClient', () => {
   test('calls sendText() with correct arguments', async () => {
     const mockGmail = google.gmail();
     const messages = [{ id: '1' }];
 
     mockGmail.users.messages.list.mockResolvedValue({ data: { messages } });
-    mockGmail.users.messages.get.mockResolvedValue({ data: { id: '1', snippet: 'Test email' } });
+    mockGmail.users.messages.get.mockResolvedValue({ data: { id: '1', snippet: 'Test email', payload: { headers: [{ name: 'Subject', value: 'email subject' }] } } });
     mockGmail.users.messages.modify.mockResolvedValue({ data: { id: '1', labelIds: [] } });
 
     await checkEmails(oauth2Client, gmailUser);
 
-    expect(sendText).toHaveBeenCalledWith(process.env.TWILIO_VIRTUAL_PHONE, 'You have a new email from gmailuser!');
+    expect(sendText).toHaveBeenCalledWith(process.env.TWILIO_VIRTUAL_PHONE, 'You have a new email from gmailuser!\nemail subject\nhttps://mail.google.com/mail/u/0/#inbox/1');
   });
 });
