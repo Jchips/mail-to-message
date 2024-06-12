@@ -33,7 +33,7 @@ Microsoft Visual Studio
 Clone this repository to your local machine.
 
 ```bash
-git clone https://github.com/Jchips/mail-to-messages.git
+git clone https://github.com/Jchips/mail-to-message.git
 ```
 
 Once downloaded, you can either use the dotnet CLI utilities or Visual Studio 2017 (or greater) to build the web application.
@@ -44,7 +44,7 @@ cd mail-to-message
 ```
 
 ```bash
-cd mail-to-messages
+cd mail-to-message
 npm start
 ```
 
@@ -76,6 +76,10 @@ Choose a gmail user to subscribe to text messages to with a GET request to `/get
 
 Viewing your received text messages on your phone. For the Twilio virtual phone, you must be logged into your Twilio account.
 
+## Project management
+
+[User stories](https://stone-muskox-c11.notion.site/User-Stories-ae8915297b34448fb25e0d18ecbc5a0f)
+
 ## Data Flow
 
 ![Data Flow Diagram](/src/assets/imgs/mail-to-message-flow-chart.png)
@@ -84,6 +88,10 @@ Viewing your received text messages on your phone. For the Twilio virtual phone,
 2. Once the user's email is authorized they can subscribe to push notifications by sending a GET request to the `/getEmails` route with a `gmailUser` that they want to subscribe to text messages for.
 3. Once subscribing, the server will check for new emails from the `gmailUser` right away and send text messages (using Twilio) if it finds any.
 4. The server will continue to listen for new emails from the `gmailUser` and send text message alert whenever a new one is sent by automatically pushing to the subscription endpoint `/gmail/push`.
+
+## Domain model
+
+![Domain model](/src/assets/imgs/mail-to-message-domain-model.jpg)
 
 ## Author
 

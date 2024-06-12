@@ -57,19 +57,19 @@ describe('check getEmails route', () => {
 
   test('should return 200 and check emails if gmailUser is valid', async () => {
     checkEmails.mockResolvedValue();
-    const response = await request(app).get('/getEmails/validUser');
+    const response = await request(app).get('/getEmails/gmailUser');
 
     expect(response.status).toBe(200);
     expect(response.text).toBe('Checked emails and sent notifications if any.');
-    expect(checkEmails).toHaveBeenCalledWith(oAuth2Client, 'validUser');
+    expect(checkEmails).toHaveBeenCalledWith(oAuth2Client, 'gmailUser');
   });
 
   test('should return 500 if an error occurs', async () => {
     checkEmails.mockRejectedValue(new Error('Test error'));
-    const response = await request(app).get('/getEmails/validUser');
+    const response = await request(app).get('/getEmails/gmailUser');
 
     expect(response.status).toBe(500);
     expect(response.text).toBe('An error occurred.');
-    expect(checkEmails).toHaveBeenCalledWith(oAuth2Client, 'validUser');
+    expect(checkEmails).toHaveBeenCalledWith(oAuth2Client, 'gmailUser');
   });
 });
