@@ -14,15 +14,15 @@ jest.mock('twilio', () => {
 });
 
 console.log = jest.fn();
+console.error = jest.fn();
 
 describe('twilioClient', () => {
+  let mockTo = '+number';
+  let mockBody = 'You have a new email from gmailUser';
+  let mockTwilio = twilio('twilio-sid', 'twilio-auth-token');
+
   test('sendText() does what it\'s supposed to', async () => {
-    let mockTo = '+number';
-    let mockBody = 'You have a new email from gmailUser';
-
     await sendText(mockTo, mockBody);
-
-    let mockTwilio = twilio('twilio-sid', 'twilio-auth-token');
     const mock = mockTwilio.messages.create;
 
     expect(mock).toHaveBeenCalledWith({
@@ -31,5 +31,12 @@ describe('twilioClient', () => {
       to: mockTo,
     });
     expect(console.log).toHaveBeenCalledWith('Message sent: mockSid');
+  });
+
+  test('should call console.error when sendText() throws an error', async () => {
+    mockTwilio.messages.create.mockRejectedValue(new Error('Test error'));
+    await sendText(mockTo, mockBody);
+
+    expect(console.error).toHaveBeenCalledWith('Error sending message: Test error');
   });
 });

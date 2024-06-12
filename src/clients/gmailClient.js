@@ -27,7 +27,7 @@ async function checkEmails(oAuth2Client, gmailUser) {
     const emailLink = `https://mail.google.com/mail/u/0/#inbox/${message.id}`;
 
     // Sends a text message to phone
-    sendText(process.env.TWILIO_VIRTUAL_PHONE, `You have a new email from ${gmailUser}!\nSubject: ${subject}\n${emailLink}`);
+    await sendText(process.env.TWILIO_VIRTUAL_PHONE, `You have a new email from ${gmailUser}!\nSubject: ${subject}\n${emailLink}`);
 
     // Marks the email as read
     await gmail.users.messages.modify({
