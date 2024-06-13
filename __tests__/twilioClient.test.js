@@ -21,7 +21,7 @@ describe('twilioClient', () => {
   let mockBody = 'You have a new email from gmailUser';
   let mockTwilio = twilio('twilio-sid', 'twilio-auth-token');
 
-  test('sendText() does what it\'s supposed to', async () => {
+  test('Logs \'message sent\' when sendText() is successful', async () => {
     await sendText(mockTo, mockBody);
     const mock = mockTwilio.messages.create;
 
