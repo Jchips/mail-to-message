@@ -86,7 +86,7 @@ Viewing your received text messages on your phone. For the Twilio virtual phone,
 
 1. The user authorizes their email by sending a GET request to the server (route: `/auth`). The server will redirect the user to a page to authorize. Authorization is done with OAuth2.
 2. Once the user's email is authorized they can subscribe to push notifications by sending a GET request to the `/getEmails` route with a `gmailUser` that they want to subscribe to text messages for.
-3. Once subscribing, the server will check for new emails from the `gmailUser` right away and send text messages (using Twilio) if it finds any.
+3. After subscribing, the server will check for new emails from the `gmailUser` right away and send text messages (using Twilio) if it finds any.
 4. The server will continue to listen for new emails from the `gmailUser` and send text message alert whenever a new one is sent by automatically pushing to the subscription endpoint `/gmail/push`.
 
 ## Domain model
